@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { useWindowContext } from '@/contexts/WindowContext'
-import { FaPlus } from 'react-icons/fa'
+import { Plus } from 'lucide-react'
 
 interface TaskbarProps {
   onCreateAppClick: () => void
@@ -32,7 +32,7 @@ export const Taskbar: React.FC<TaskbarProps> = ({ onCreateAppClick }) => {
         onClick={onCreateAppClick}
         className="h-10 px-4 flex items-center justify-center gap-2 rounded bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all"
       >
-        <FaPlus className="text-white text-lg" />
+        <Plus className="text-white" size={20} />
         <span className="text-white text-sm font-medium">新しいアプリ</span>
       </button>
 

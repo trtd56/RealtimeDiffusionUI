@@ -2,43 +2,14 @@
 
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  FaTimes,
-  FaRocket,
-  FaQuestionCircle,
-  FaLightbulb,
-  FaGlobe,
-  FaGamepad,
-  FaMusic,
-  FaBriefcase,
-  FaHeart,
-} from 'react-icons/fa'
+import { X, HelpCircle, Rocket } from 'lucide-react'
 import { AppConfig } from '@/types'
+import { getIconComponent } from '@/lib/icon-utils'
 
 interface CreateAppModalProps {
   isOpen: boolean
   onClose: () => void
   onCreate: (app: Omit<AppConfig, 'id'>) => void
-}
-
-// アイコン候補のマッピング
-const iconSuggestions = [
-  { keyword: 'game', icon: <FaGamepad /> },
-  { keyword: 'music', icon: <FaMusic /> },
-  { keyword: 'work', icon: <FaBriefcase /> },
-  { keyword: 'health', icon: <FaHeart /> },
-  { keyword: 'web', icon: <FaGlobe /> },
-  { keyword: 'idea', icon: <FaLightbulb /> },
-]
-
-const getIconForApp = (description: string): React.ReactNode => {
-  const lowerDesc = description.toLowerCase()
-  for (const suggestion of iconSuggestions) {
-    if (lowerDesc.includes(suggestion.keyword)) {
-      return suggestion.icon
-    }
-  }
-  return <FaRocket /> // デフォルトアイコン
 }
 
 export const CreateAppModal: React.FC<CreateAppModalProps> = ({
@@ -49,15 +20,43 @@ export const CreateAppModal: React.FC<CreateAppModalProps> = ({
   const [appName, setAppName] = useState('')
   const [description, setDescription] = useState('')
   const [isCreating, setIsCreating] = useState(false)
+  const [isGeneratingIcon, setIsGeneratingIcon] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!appName || !description) return
 
     setIsCreating(true)
+    setIsGeneratingIcon(true)
 
-    // アイコンを自動選択
-    const icon = getIconForApp(description)
+    let iconName = 'Rocket' // デフォルトアイコン
+
+    try {
+      // LLMでアイコンを生成
+      const response = await fetch('/api/generate-icon', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: appName,
+          description: description,
+        }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        iconName = data.icon
+      }
+    } catch (error) {
+      console.error('Failed to generate icon:', error)
+    } finally {
+      setIsGeneratingIcon(false)
+    }
+
+    // アイコンコンポーネントを取得
+    const IconComponent = getIconComponent(iconName)
+    const icon = <IconComponent size={32} />
 
     // アプリ作成
     onCreate({
@@ -118,7 +117,7 @@ export const CreateAppModal: React.FC<CreateAppModalProps> = ({
                     onClick={onClose}
                     className="text-white hover:bg-white/20 p-2 rounded-lg transition-colors"
                   >
-                    <FaTimes size={20} />
+                    <X size={20} />
                   </button>
                 </div>
               </div>
@@ -157,7 +156,7 @@ export const CreateAppModal: React.FC<CreateAppModalProps> = ({
                 {/* 例示 */}
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <FaQuestionCircle className="text-gray-500" />
+                    <HelpCircle className="text-gray-500" size={16} />
                     <span className="text-sm font-medium text-gray-700">
                       例えばこんなアプリが作れます
                     </span>
@@ -190,7 +189,11 @@ export const CreateAppModal: React.FC<CreateAppModalProps> = ({
                     disabled={isCreating || !appName || !description}
                     className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isCreating ? '作成中...' : 'アプリを作成'}
+                    {isGeneratingIcon
+                      ? 'アイコン生成中...'
+                      : isCreating
+                        ? '作成中...'
+                        : 'アプリを作成'}
                   </button>
                 </div>
               </form>

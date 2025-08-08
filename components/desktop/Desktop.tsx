@@ -7,50 +7,43 @@ import { CreateAppModal } from './CreateAppModal'
 import { useWindowContext } from '@/contexts/WindowContext'
 import { useCustomApps } from '@/hooks/useCustomApps'
 import { AppConfig } from '@/types'
-import {
-  FaCalculator,
-  FaFileAlt,
-  FaPaintBrush,
-  FaCode,
-  FaTable,
-  FaEnvelope,
-} from 'react-icons/fa'
+import { Calculator, FileText, Palette, Code, Table, Mail } from 'lucide-react'
 
 const defaultApps: AppConfig[] = [
   {
     id: 'notepad',
     name: 'メモ帳',
-    icon: <FaFileAlt />,
+    icon: <FileText size={32} />,
     defaultSize: { width: 600, height: 400 },
   },
   {
     id: 'calculator',
     name: '電卓',
-    icon: <FaCalculator />,
+    icon: <Calculator size={32} />,
     defaultSize: { width: 320, height: 480 },
   },
   {
     id: 'paint',
     name: 'ペイント',
-    icon: <FaPaintBrush />,
+    icon: <Palette size={32} />,
     defaultSize: { width: 800, height: 600 },
   },
   {
     id: 'code',
     name: 'コードエディタ',
-    icon: <FaCode />,
+    icon: <Code size={32} />,
     defaultSize: { width: 900, height: 600 },
   },
   {
     id: 'table',
     name: 'テーブル',
-    icon: <FaTable />,
+    icon: <Table size={32} />,
     defaultSize: { width: 700, height: 500 },
   },
   {
     id: 'mail',
     name: 'メール',
-    icon: <FaEnvelope />,
+    icon: <Mail size={32} />,
     defaultSize: { width: 800, height: 600 },
   },
 ]
