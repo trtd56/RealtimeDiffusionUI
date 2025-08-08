@@ -15,14 +15,14 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { appId } = body
+    const { appId, customPrompt } = body
 
     if (!appId) {
       return NextResponse.json({ error: 'appId is required' }, { status: 400 })
     }
 
     // Gemini APIを使用してUI構造を生成
-    const uiStructure = await generateUIWithGemini(appId)
+    const uiStructure = await generateUIWithGemini(appId, customPrompt)
 
     return NextResponse.json({ uiStructure })
   } catch (error) {

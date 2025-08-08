@@ -6,9 +6,13 @@ import { UIRenderer } from './UIRenderer'
 
 interface GeneratedUIProps {
   appId: string
+  customPrompt?: string
 }
 
-export const GeneratedUI: React.FC<GeneratedUIProps> = ({ appId }) => {
+export const GeneratedUI: React.FC<GeneratedUIProps> = ({
+  appId,
+  customPrompt,
+}) => {
   const [uiStructure, setUiStructure] = useState<any>(null)
   const [isGenerating, setIsGenerating] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -26,7 +30,7 @@ export const GeneratedUI: React.FC<GeneratedUIProps> = ({ appId }) => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ appId }),
+          body: JSON.stringify({ appId, customPrompt }),
         })
 
         if (!response.ok) {
@@ -53,7 +57,7 @@ export const GeneratedUI: React.FC<GeneratedUIProps> = ({ appId }) => {
     }
 
     generateUI()
-  }, [appId])
+  }, [appId, customPrompt])
 
   if (error) {
     return (

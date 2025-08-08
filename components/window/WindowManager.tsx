@@ -12,7 +12,10 @@ export const WindowManager: React.FC = () => {
     <>
       {windows.map((window) => (
         <Window key={window.id} window={window}>
-          <GeneratedUI appId={window.appId} />
+          <GeneratedUI
+            appId={window.appId}
+            customPrompt={window.customPrompt}
+          />
         </Window>
       ))}
     </>

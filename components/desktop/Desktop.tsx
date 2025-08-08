@@ -1,9 +1,11 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { AppIcon } from './AppIcon'
 import { Taskbar } from './Taskbar'
+import { CreateAppModal } from './CreateAppModal'
 import { useWindowContext } from '@/contexts/WindowContext'
+import { useCustomApps } from '@/hooks/useCustomApps'
 import { AppConfig } from '@/types'
 import {
   FaCalculator,
@@ -12,9 +14,10 @@ import {
   FaCode,
   FaTable,
   FaEnvelope,
+  FaPlus,
 } from 'react-icons/fa'
 
-const apps: AppConfig[] = [
+const defaultApps: AppConfig[] = [
   {
     id: 'notepad',
     name: 'メモ帳',
@@ -55,6 +58,10 @@ const apps: AppConfig[] = [
 
 export const Desktop: React.FC = () => {
   const { addWindow } = useWindowContext()
+  const { customApps, addCustomApp, removeCustomApp } = useCustomApps()
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const allApps = [...defaultApps, ...customApps]
 
   const handleAppDoubleClick = (app: AppConfig) => {
     const centerX = (window.innerWidth - (app.defaultSize?.width || 600)) / 2
@@ -67,21 +74,54 @@ export const Desktop: React.FC = () => {
       size: app.defaultSize || { width: 600, height: 400 },
       isMinimized: false,
       isMaximized: false,
+      customPrompt: app.prompt,
     })
+  }
+
+  const handleCreateApp = (appData: Omit<AppConfig, 'id'>) => {
+    addCustomApp(appData)
+  }
+
+  const handleRightClick = (e: React.MouseEvent, app: AppConfig) => {
+    if (app.isCustom) {
+      e.preventDefault()
+      if (confirm(`「${app.name}」を削除しますか？`)) {
+        removeCustomApp(app.id)
+      }
+    }
   }
 
   return (
     <div className="h-screen w-screen relative overflow-hidden">
       <div className="absolute inset-0 grid grid-cols-8 gap-2 p-4">
-        {apps.map((app) => (
+        {allApps.map((app) => (
           <AppIcon
             key={app.id}
             app={app}
             onDoubleClick={() => handleAppDoubleClick(app)}
+            onContextMenu={(e) => handleRightClick(e, app)}
           />
         ))}
+
+        {/* 新しいアプリ作成ボタン */}
+        <div
+          className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-white/10 cursor-pointer transition-colors"
+          onDoubleClick={() => setIsModalOpen(true)}
+        >
+          <div className="w-12 h-12 flex items-center justify-center bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg shadow-lg mb-2">
+            <FaPlus className="text-white text-xl" />
+          </div>
+          <span className="text-xs text-white text-center">新しいアプリ</span>
+        </div>
       </div>
+
       <Taskbar />
+
+      <CreateAppModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onCreate={handleCreateApp}
+      />
     </div>
   )
 }

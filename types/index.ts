@@ -8,6 +8,7 @@ export interface WindowState {
   isMinimized: boolean
   isMaximized: boolean
   content?: React.ReactNode
+  customPrompt?: string
 }
 
 export interface AppConfig {
@@ -16,6 +17,9 @@ export interface AppConfig {
   icon: React.ReactNode
   defaultSize?: { width: number; height: number }
   defaultPosition?: { x: number; y: number }
+  isCustom?: boolean
+  description?: string
+  prompt?: string
 }
 
 export interface UIElement {

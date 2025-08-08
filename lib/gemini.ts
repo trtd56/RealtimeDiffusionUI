@@ -10,7 +10,10 @@ const appTypePrompts: Record<string, string> = {
   mail: 'メールクライアント',
 }
 
-export async function generateUIWithGemini(appId: string): Promise<any> {
+export async function generateUIWithGemini(
+  appId: string,
+  customPrompt?: string
+): Promise<any> {
   const apiKey = process.env.GEMINI_API_KEY
 
   if (!apiKey) {
@@ -23,7 +26,8 @@ export async function generateUIWithGemini(appId: string): Promise<any> {
     apiKey,
   })
 
-  const appType = appTypePrompts[appId] || `${appId}アプリケーション`
+  const appType =
+    customPrompt || appTypePrompts[appId] || `${appId}アプリケーション`
 
   const config = {
     thinkingConfig: {
