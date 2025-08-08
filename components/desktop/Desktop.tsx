@@ -14,7 +14,6 @@ import {
   FaCode,
   FaTable,
   FaEnvelope,
-  FaPlus,
 } from 'react-icons/fa'
 
 const defaultApps: AppConfig[] = [
@@ -102,20 +101,9 @@ export const Desktop: React.FC = () => {
             onContextMenu={(e) => handleRightClick(e, app)}
           />
         ))}
-
-        {/* 新しいアプリ作成ボタン */}
-        <div
-          className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-white/10 cursor-pointer transition-colors"
-          onDoubleClick={() => setIsModalOpen(true)}
-        >
-          <div className="w-12 h-12 flex items-center justify-center bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg shadow-lg mb-2">
-            <FaPlus className="text-white text-xl" />
-          </div>
-          <span className="text-xs text-white text-center">新しいアプリ</span>
-        </div>
       </div>
 
-      <Taskbar />
+      <Taskbar onCreateAppClick={() => setIsModalOpen(true)} />
 
       <CreateAppModal
         isOpen={isModalOpen}

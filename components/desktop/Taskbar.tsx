@@ -2,9 +2,13 @@
 
 import React from 'react'
 import { useWindowContext } from '@/contexts/WindowContext'
-import { FaWindows } from 'react-icons/fa'
+import { FaPlus } from 'react-icons/fa'
 
-export const Taskbar: React.FC = () => {
+interface TaskbarProps {
+  onCreateAppClick: () => void
+}
+
+export const Taskbar: React.FC<TaskbarProps> = ({ onCreateAppClick }) => {
   const { windows, activeWindowId, focusWindow, restoreWindow } =
     useWindowContext()
 
@@ -24,8 +28,12 @@ export const Taskbar: React.FC = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 h-12 bg-gray-900 bg-opacity-90 backdrop-blur-md taskbar-shadow flex items-center px-2 z-[99999]">
-      <button className="h-10 w-10 flex items-center justify-center rounded hover:bg-gray-700 transition-colors">
-        <FaWindows className="text-white text-xl" />
+      <button
+        onClick={onCreateAppClick}
+        className="h-10 px-4 flex items-center justify-center gap-2 rounded bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all"
+      >
+        <FaPlus className="text-white text-lg" />
+        <span className="text-white text-sm font-medium">新しいアプリ</span>
       </button>
 
       <div className="flex-1 flex items-center px-2 gap-1">
