@@ -113,9 +113,7 @@ export const GeneratedUI: React.FC<GeneratedUIProps> = ({
         className="flex items-center justify-center h-full"
       >
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4 mx-auto"></div>
-          <p className="text-lg font-semibold">UIを生成中...</p>
-          <p className="text-sm text-gray-500">AIがデザインを考えています</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
         </div>
       </motion.div>
     )

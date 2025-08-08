@@ -1,14 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generateUIWithGemini } from '@/lib/gemini'
+import { generateUI } from '@/lib/llm'
 
 export async function POST(request: NextRequest) {
   try {
+    const llmProvider = process.env.LLM_PROVIDER || 'gemini'
+
     // APIキーの確認
-    if (!process.env.GEMINI_API_KEY) {
+    if (llmProvider === 'gemini' && !process.env.GEMINI_API_KEY) {
       return NextResponse.json(
         {
           error:
             'Gemini API key is not configured. Please set GEMINI_API_KEY in .env.local',
+        },
+        { status: 500 }
+      )
+    }
+
+    if (llmProvider === 'mercury' && !process.env.MERCURY_API_KEY) {
+      return NextResponse.json(
+        {
+          error:
+            'Mercury API key is not configured. Please set MERCURY_API_KEY in .env.local',
         },
         { status: 500 }
       )
@@ -21,8 +33,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'appId is required' }, { status: 400 })
     }
 
-    // Gemini APIを使用してUIのHTMLを生成
-    const uiHtml = await generateUIWithGemini(appId, customPrompt)
+    // 抽象化レイヤーを使用してUIのHTMLを生成
+    const uiHtml = await generateUI(appId, customPrompt)
 
     return NextResponse.json({ uiHtml })
   } catch (error) {
@@ -32,7 +44,7 @@ export async function POST(request: NextRequest) {
         error:
           error instanceof Error
             ? error.message
-            : 'Failed to generate UI with Gemini API',
+            : 'Failed to generate UI with LLM API',
       },
       { status: 500 }
     )
