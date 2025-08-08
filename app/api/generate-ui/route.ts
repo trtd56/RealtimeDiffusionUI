@@ -21,10 +21,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Gemini APIを使用してHTMLを生成
-    const htmlContent = await generateUIWithGemini(appId)
+    // Gemini APIを使用してUI構造を生成
+    const uiStructure = await generateUIWithGemini(appId)
 
-    return NextResponse.json({ html: htmlContent })
+    return NextResponse.json({ uiStructure })
   } catch (error) {
     console.error('Error generating UI:', error)
     return NextResponse.json(

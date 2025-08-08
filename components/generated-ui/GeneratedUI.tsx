@@ -2,23 +2,22 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import DOMPurify from 'dompurify'
+import { UIRenderer } from './UIRenderer'
 
 interface GeneratedUIProps {
   appId: string
 }
 
 export const GeneratedUI: React.FC<GeneratedUIProps> = ({ appId }) => {
-  const [htmlContent, setHtmlContent] = useState<string>('')
+  const [uiStructure, setUiStructure] = useState<any>(null)
   const [isGenerating, setIsGenerating] = useState(true)
-  const [displayedHtml, setDisplayedHtml] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     // UIを生成する関数
     const generateUI = async () => {
       setIsGenerating(true)
-      setDisplayedHtml('')
+      setUiStructure(null)
       setError(null)
       
       try {
@@ -42,38 +41,8 @@ export const GeneratedUI: React.FC<GeneratedUIProps> = ({ appId }) => {
           throw new Error(data.error)
         }
 
-        // DOMPurifyでサニタイズ（XSS攻撃を防ぐ）
-        const sanitizedHtml = DOMPurify.sanitize(data.html, {
-          ALLOWED_TAGS: [
-            'div', 'span', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-            'button', 'input', 'textarea', 'select', 'option', 'label',
-            'table', 'thead', 'tbody', 'tr', 'th', 'td',
-            'ul', 'ol', 'li', 'nav', 'canvas', 'form', 'fieldset', 'legend',
-            'svg', 'path', 'strong', 'em', 'br', 'hr', 'small', 'code', 'pre'
-          ],
-          ALLOWED_ATTR: [
-            'class', 'id', 'type', 'placeholder', 'value', 'readonly',
-            'style', 'min', 'max', 'for', 'width', 'height', 'name',
-            'viewBox', 'fill', 'stroke', 'stroke-linecap', 'stroke-linejoin', 'stroke-width', 'd',
-            'colspan', 'rowspan', 'disabled', 'checked', 'selected', 'required',
-            'autocomplete', 'autofocus', 'multiple', 'pattern', 'step'
-          ],
-          KEEP_CONTENT: true,
-          ALLOW_DATA_ATTR: false,
-        })
-        
-        setHtmlContent(sanitizedHtml)
-        
-        // タイピングアニメーションのシミュレーション
-        // HTMLを段階的に表示
-        const chunks = sanitizedHtml.match(/<[^>]+>|[^<]+/g) || []
-        let currentHtml = ''
-        
-        for (let i = 0; i < chunks.length; i++) {
-          currentHtml += chunks[i]
-          setDisplayedHtml(currentHtml)
-          await new Promise(resolve => setTimeout(resolve, 3)) // 各要素を3msごとに追加
-        }
+        // UI構造を設定
+        setUiStructure(data.uiStructure)
         
       } catch (err) {
         console.error('Error generating UI:', err)
@@ -111,7 +80,7 @@ export const GeneratedUI: React.FC<GeneratedUIProps> = ({ appId }) => {
     )
   }
 
-  if (isGenerating && !displayedHtml) {
+  if (isGenerating && !uiStructure) {
     return (
       <motion.div
         initial={{ opacity: 0 }}
@@ -125,7 +94,7 @@ export const GeneratedUI: React.FC<GeneratedUIProps> = ({ appId }) => {
           AIがUIを生成しています...
           <br />
           <span className="text-sm text-gray-500">
-            Gemini APIでHTMLを生成中
+            Gemini APIでUIを構築中
           </span>
         </p>
         <div className="mt-4 w-full max-w-md">
@@ -142,6 +111,13 @@ export const GeneratedUI: React.FC<GeneratedUIProps> = ({ appId }) => {
     )
   }
 
+  // アクションハンドラー
+  const handleAction = (action: string, data?: any) => {
+    console.log(`アクション実行: ${action}`, data)
+    // ここで必要に応じて、親コンポーネントへの通知や
+    // グローバルな状態管理などを実装できます
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -149,16 +125,12 @@ export const GeneratedUI: React.FC<GeneratedUIProps> = ({ appId }) => {
       transition={{ duration: 0.3 }}
       className="h-full overflow-auto relative"
     >
-      {isGenerating && (
-        <div className="fixed top-4 right-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm animate-pulse z-50">
-          生成中...
-        </div>
+      {uiStructure && (
+        <UIRenderer 
+          uiStructure={uiStructure} 
+          onAction={handleAction}
+        />
       )}
-      
-      <div 
-        dangerouslySetInnerHTML={{ __html: displayedHtml }}
-        className="generated-content"
-      />
     </motion.div>
   )
 }
