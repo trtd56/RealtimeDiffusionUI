@@ -5,14 +5,15 @@ import { useWindowContext } from '@/contexts/WindowContext'
 import { FaWindows } from 'react-icons/fa'
 
 export const Taskbar: React.FC = () => {
-  const { windows, activeWindowId, focusWindow, restoreWindow } = useWindowContext()
+  const { windows, activeWindowId, focusWindow, restoreWindow } =
+    useWindowContext()
 
   const handleTaskClick = (windowId: string, isMinimized: boolean) => {
     if (isMinimized) {
       restoreWindow(windowId)
     } else if (activeWindowId === windowId) {
       // If clicking on active window, minimize it
-      const window = windows.find(w => w.id === windowId)
+      const window = windows.find((w) => w.id === windowId)
       if (window) {
         restoreWindow(windowId)
       }
@@ -26,7 +27,7 @@ export const Taskbar: React.FC = () => {
       <button className="h-10 w-10 flex items-center justify-center rounded hover:bg-gray-700 transition-colors">
         <FaWindows className="text-white text-xl" />
       </button>
-      
+
       <div className="flex-1 flex items-center px-2 gap-1">
         {windows.map((window) => (
           <button
@@ -34,19 +35,25 @@ export const Taskbar: React.FC = () => {
             onClick={() => handleTaskClick(window.id, window.isMinimized)}
             className={`
               h-9 px-3 rounded flex items-center gap-2 transition-all
-              ${activeWindowId === window.id && !window.isMinimized
-                ? 'bg-gray-700 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+              ${
+                activeWindowId === window.id && !window.isMinimized
+                  ? 'bg-gray-700 text-white'
+                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
               }
             `}
           >
-            <span className="text-sm truncate max-w-[150px]">{window.title}</span>
+            <span className="text-sm truncate max-w-[150px]">
+              {window.title}
+            </span>
           </button>
         ))}
       </div>
-      
+
       <div className="text-white text-xs px-3">
-        {new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })}
+        {new Date().toLocaleTimeString('ja-JP', {
+          hour: '2-digit',
+          minute: '2-digit',
+        })}
       </div>
     </div>
   )

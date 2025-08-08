@@ -4,7 +4,12 @@ import React, { useEffect, useState } from 'react'
 import { Rnd } from 'react-rnd'
 import { WindowState } from '@/types'
 import { useWindowContext } from '@/contexts/WindowContext'
-import { FaTimes, FaWindowMinimize, FaWindowMaximize, FaWindowRestore } from 'react-icons/fa'
+import {
+  FaTimes,
+  FaWindowMinimize,
+  FaWindowMaximize,
+  FaWindowRestore,
+} from 'react-icons/fa'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface WindowProps {
@@ -13,7 +18,14 @@ interface WindowProps {
 }
 
 export const Window: React.FC<WindowProps> = ({ window, children }) => {
-  const { focusWindow, updateWindow, removeWindow, minimizeWindow, maximizeWindow, restoreWindow } = useWindowContext()
+  const {
+    focusWindow,
+    updateWindow,
+    removeWindow,
+    minimizeWindow,
+    maximizeWindow,
+    restoreWindow,
+  } = useWindowContext()
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -49,8 +61,13 @@ export const Window: React.FC<WindowProps> = ({ window, children }) => {
   }
 
   const position = window.isMaximized ? { x: 0, y: 0 } : window.position
-  const size = window.isMaximized 
-    ? { width: typeof globalThis !== 'undefined' ? globalThis.innerWidth : 1920, height: (typeof globalThis !== 'undefined' ? globalThis.innerHeight : 1080) - 48 } 
+  const size = window.isMaximized
+    ? {
+        width: typeof globalThis !== 'undefined' ? globalThis.innerWidth : 1920,
+        height:
+          (typeof globalThis !== 'undefined' ? globalThis.innerHeight : 1080) -
+          48,
+      }
     : window.size
 
   return (
@@ -92,7 +109,11 @@ export const Window: React.FC<WindowProps> = ({ window, children }) => {
                 onClick={handleMaximizeToggle}
                 className="p-2 hover:bg-white hover:bg-opacity-20 rounded transition-colors"
               >
-                {window.isMaximized ? <FaWindowRestore className="text-xs" /> : <FaWindowMaximize className="text-xs" />}
+                {window.isMaximized ? (
+                  <FaWindowRestore className="text-xs" />
+                ) : (
+                  <FaWindowMaximize className="text-xs" />
+                )}
               </button>
               <button
                 onClick={() => removeWindow(window.id)}
@@ -104,9 +125,8 @@ export const Window: React.FC<WindowProps> = ({ window, children }) => {
           </div>
           <div className="flex-1 overflow-auto p-4 bg-gray-50">
             {isLoading ? (
-              <div className="flex flex-col items-center justify-center h-full">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
-                <p className="text-gray-600">UI生成中...</p>
+              <div className="flex items-center justify-center h-full">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
               </div>
             ) : (
               children || window.content

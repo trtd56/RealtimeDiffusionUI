@@ -14,12 +14,11 @@ export const GeneratedUI: React.FC<GeneratedUIProps> = ({ appId }) => {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // UIを生成する関数
     const generateUI = async () => {
       setIsGenerating(true)
       setUiStructure(null)
       setError(null)
-      
+
       try {
         // APIエンドポイントにリクエスト
         const response = await fetch('/api/generate-ui', {
@@ -32,18 +31,19 @@ export const GeneratedUI: React.FC<GeneratedUIProps> = ({ appId }) => {
 
         if (!response.ok) {
           const errorData = await response.json()
-          throw new Error(errorData.error || `API request failed: ${response.status}`)
+          throw new Error(
+            errorData.error || `API request failed: ${response.status}`
+          )
         }
 
         const data = await response.json()
-        
+
         if (data.error) {
           throw new Error(data.error)
         }
 
         // UI構造を設定
         setUiStructure(data.uiStructure)
-        
       } catch (err) {
         console.error('Error generating UI:', err)
         setError(err instanceof Error ? err.message : 'UI生成に失敗しました')
@@ -85,28 +85,9 @@ export const GeneratedUI: React.FC<GeneratedUIProps> = ({ appId }) => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="flex flex-col items-center justify-center h-full p-8"
+        className="flex items-center justify-center h-full"
       >
-        <div className="mb-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-        </div>
-        <p className="text-gray-600 text-center">
-          AIがUIを生成しています...
-          <br />
-          <span className="text-sm text-gray-500">
-            Gemini APIでUIを構築中
-          </span>
-        </p>
-        <div className="mt-4 w-full max-w-md">
-          <div className="bg-gray-200 rounded-full h-2 overflow-hidden">
-            <motion.div
-              className="bg-blue-500 h-full"
-              initial={{ width: '0%' }}
-              animate={{ width: '100%' }}
-              transition={{ duration: 2, ease: 'easeInOut' }}
-            />
-          </div>
-        </div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </motion.div>
     )
   }
@@ -126,10 +107,7 @@ export const GeneratedUI: React.FC<GeneratedUIProps> = ({ appId }) => {
       className="h-full overflow-auto relative"
     >
       {uiStructure && (
-        <UIRenderer 
-          uiStructure={uiStructure} 
-          onAction={handleAction}
-        />
+        <UIRenderer uiStructure={uiStructure} onAction={handleAction} />
       )}
     </motion.div>
   )

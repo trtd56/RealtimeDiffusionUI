@@ -12,9 +12,11 @@ const appTypePrompts: Record<string, string> = {
 
 export async function generateUIWithGemini(appId: string): Promise<any> {
   const apiKey = process.env.GEMINI_API_KEY
-  
+
   if (!apiKey) {
-    throw new Error('GEMINI_API_KEY is not configured. Please set it in .env.local file.')
+    throw new Error(
+      'GEMINI_API_KEY is not configured. Please set it in .env.local file.'
+    )
   }
 
   const ai = new GoogleGenAI({
@@ -39,12 +41,12 @@ export async function generateUIWithGemini(appId: string): Promise<any> {
 - レスポンシブデザインを考慮
 - 適切なインタラクティブ要素（ボタン、入力フィールドなど）を含める
 - onClickなどのイベントハンドラーには文字列でアクション名を指定（例: "save", "clear", "calculate"）`,
-      }
+      },
     ],
   }
 
   const model = 'gemini-2.5-flash-lite'
-  
+
   const contents = [
     {
       role: 'user',
@@ -61,127 +63,162 @@ export async function generateUIWithGemini(appId: string): Promise<any> {
           text: JSON.stringify({
             type: 'div',
             props: { className: 'p-6 max-w-3xl mx-auto' },
-            children: [{
-              type: 'div',
-              props: { className: 'bg-white rounded-lg shadow-lg overflow-hidden' },
-              children: [
-                {
-                  type: 'div',
-                  props: { className: 'bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4' },
-                  children: [{
-                    type: 'h2',
-                    props: { className: 'text-2xl font-bold text-white' },
-                    children: 'メモ帳'
-                  }]
+            children: [
+              {
+                type: 'div',
+                props: {
+                  className: 'bg-white rounded-lg shadow-lg overflow-hidden',
                 },
-                {
-                  type: 'div',
-                  props: { className: 'p-6 space-y-4' },
-                  children: [
-                    {
-                      type: 'div',
-                      props: {},
-                      children: [
-                        {
-                          type: 'label',
-                          props: { className: 'block text-sm font-medium text-gray-700 mb-2' },
-                          children: 'タイトル'
-                        },
-                        {
-                          type: 'input',
-                          props: {
-                            type: 'text',
-                            className: 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-                            placeholder: 'メモのタイトルを入力',
-                            id: 'title'
-                          }
-                        }
-                      ]
+                children: [
+                  {
+                    type: 'div',
+                    props: {
+                      className:
+                        'bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4',
                     },
-                    {
-                      type: 'div',
-                      props: {},
-                      children: [
-                        {
-                          type: 'label',
-                          props: { className: 'block text-sm font-medium text-gray-700 mb-2' },
-                          children: 'カテゴリー'
-                        },
-                        {
-                          type: 'select',
-                          props: {
-                            className: 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500',
-                            id: 'category'
-                          },
-                          children: [
-                            { type: 'option', props: {}, children: '仕事' },
-                            { type: 'option', props: {}, children: 'プライベート' },
-                            { type: 'option', props: {}, children: 'アイデア' },
-                            { type: 'option', props: {}, children: 'その他' }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      type: 'div',
-                      props: {},
-                      children: [
-                        {
-                          type: 'label',
-                          props: { className: 'block text-sm font-medium text-gray-700 mb-2' },
-                          children: '内容'
-                        },
-                        {
-                          type: 'textarea',
-                          props: {
-                            className: 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-64 resize-none',
-                            placeholder: 'メモの内容を入力...',
-                            id: 'content'
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      type: 'div',
-                      props: { className: 'flex justify-between items-center' },
-                      children: [
-                        {
-                          type: 'div',
-                          props: { className: 'text-sm text-gray-500' },
-                          children: [{
-                            type: 'span',
-                            props: { id: 'charCount' },
-                            children: '文字数: 0'
-                          }]
-                        },
-                        {
-                          type: 'div',
-                          props: { className: 'flex gap-3' },
-                          children: [
-                            {
-                              type: 'button',
-                              props: {
-                                className: 'px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors',
-                                onClick: 'clear'
-                              },
-                              children: 'クリア'
+                    children: [
+                      {
+                        type: 'h2',
+                        props: { className: 'text-2xl font-bold text-white' },
+                        children: 'メモ帳',
+                      },
+                    ],
+                  },
+                  {
+                    type: 'div',
+                    props: { className: 'p-6 space-y-4' },
+                    children: [
+                      {
+                        type: 'div',
+                        props: {},
+                        children: [
+                          {
+                            type: 'label',
+                            props: {
+                              className:
+                                'block text-sm font-medium text-gray-700 mb-2',
                             },
-                            {
-                              type: 'button',
-                              props: {
-                                className: 'px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors',
-                                onClick: 'save'
+                            children: 'タイトル',
+                          },
+                          {
+                            type: 'input',
+                            props: {
+                              type: 'text',
+                              className:
+                                'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                              placeholder: 'メモのタイトルを入力',
+                              id: 'title',
+                            },
+                          },
+                        ],
+                      },
+                      {
+                        type: 'div',
+                        props: {},
+                        children: [
+                          {
+                            type: 'label',
+                            props: {
+                              className:
+                                'block text-sm font-medium text-gray-700 mb-2',
+                            },
+                            children: 'カテゴリー',
+                          },
+                          {
+                            type: 'select',
+                            props: {
+                              className:
+                                'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500',
+                              id: 'category',
+                            },
+                            children: [
+                              { type: 'option', props: {}, children: '仕事' },
+                              {
+                                type: 'option',
+                                props: {},
+                                children: 'プライベート',
                               },
-                              children: '保存'
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }]
+                              {
+                                type: 'option',
+                                props: {},
+                                children: 'アイデア',
+                              },
+                              { type: 'option', props: {}, children: 'その他' },
+                            ],
+                          },
+                        ],
+                      },
+                      {
+                        type: 'div',
+                        props: {},
+                        children: [
+                          {
+                            type: 'label',
+                            props: {
+                              className:
+                                'block text-sm font-medium text-gray-700 mb-2',
+                            },
+                            children: '内容',
+                          },
+                          {
+                            type: 'textarea',
+                            props: {
+                              className:
+                                'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-64 resize-none',
+                              placeholder: 'メモの内容を入力...',
+                              id: 'content',
+                            },
+                          },
+                        ],
+                      },
+                      {
+                        type: 'div',
+                        props: {
+                          className: 'flex justify-between items-center',
+                        },
+                        children: [
+                          {
+                            type: 'div',
+                            props: { className: 'text-sm text-gray-500' },
+                            children: [
+                              {
+                                type: 'span',
+                                props: { id: 'charCount' },
+                                children: '文字数: 0',
+                              },
+                            ],
+                          },
+                          {
+                            type: 'div',
+                            props: { className: 'flex gap-3' },
+                            children: [
+                              {
+                                type: 'button',
+                                props: {
+                                  className:
+                                    'px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors',
+                                  onClick: 'clear',
+                                },
+                                children: 'クリア',
+                              },
+                              {
+                                type: 'button',
+                                props: {
+                                  className:
+                                    'px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors',
+                                  onClick: 'save',
+                                },
+                                children: '保存',
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           }),
         },
       ],
@@ -204,11 +241,12 @@ export async function generateUIWithGemini(appId: string): Promise<any> {
     })
 
     const text = response.text || ''
-    
+
     // コードブロックから JSONを抽出
-    const jsonMatch = text.match(/```json\n?([\s\S]*?)\n?```/) || 
-                      text.match(/```\n?([\s\S]*?)\n?```/)
-    
+    const jsonMatch =
+      text.match(/```json\n?([\s\S]*?)\n?```/) ||
+      text.match(/```\n?([\s\S]*?)\n?```/)
+
     if (jsonMatch) {
       try {
         return JSON.parse(jsonMatch[1].trim())
@@ -217,7 +255,7 @@ export async function generateUIWithGemini(appId: string): Promise<any> {
         // JSONパースに失敗した場合は文字列をそのまま試みる
       }
     }
-    
+
     // コードブロックがない場合はそのままJSONとしてパースを試みる
     try {
       return JSON.parse(text.trim())

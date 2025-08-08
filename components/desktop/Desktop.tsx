@@ -5,7 +5,14 @@ import { AppIcon } from './AppIcon'
 import { Taskbar } from './Taskbar'
 import { useWindowContext } from '@/contexts/WindowContext'
 import { AppConfig } from '@/types'
-import { FaCalculator, FaFileAlt, FaPaintBrush, FaCode, FaTable, FaEnvelope } from 'react-icons/fa'
+import {
+  FaCalculator,
+  FaFileAlt,
+  FaPaintBrush,
+  FaCode,
+  FaTable,
+  FaEnvelope,
+} from 'react-icons/fa'
 
 const apps: AppConfig[] = [
   {

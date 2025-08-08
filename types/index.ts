@@ -19,7 +19,15 @@ export interface AppConfig {
 }
 
 export interface UIElement {
-  type: 'label' | 'input' | 'button' | 'select' | 'textarea' | 'checkbox' | 'radio' | 'container'
+  type:
+    | 'label'
+    | 'input'
+    | 'button'
+    | 'select'
+    | 'textarea'
+    | 'checkbox'
+    | 'radio'
+    | 'container'
   id?: string
   text?: string
   placeholder?: string

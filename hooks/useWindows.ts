@@ -6,16 +6,19 @@ export const useWindows = () => {
   const [activeWindowId, setActiveWindowId] = useState<string | null>(null)
   const nextZIndex = useRef(1000)
 
-  const addWindow = useCallback((window: Omit<WindowState, 'id' | 'zIndex'>) => {
-    const newWindow: WindowState = {
-      ...window,
-      id: `window-${Date.now()}`,
-      zIndex: nextZIndex.current++,
-    }
-    setWindows((prev) => [...prev, newWindow])
-    setActiveWindowId(newWindow.id)
-    return newWindow.id
-  }, [])
+  const addWindow = useCallback(
+    (window: Omit<WindowState, 'id' | 'zIndex'>) => {
+      const newWindow: WindowState = {
+        ...window,
+        id: `window-${Date.now()}`,
+        zIndex: nextZIndex.current++,
+      }
+      setWindows((prev) => [...prev, newWindow])
+      setActiveWindowId(newWindow.id)
+      return newWindow.id
+    },
+    []
+  )
 
   const removeWindow = useCallback((windowId: string) => {
     setWindows((prev) => prev.filter((w) => w.id !== windowId))
@@ -40,18 +43,27 @@ export const useWindows = () => {
     []
   )
 
-  const minimizeWindow = useCallback((windowId: string) => {
-    updateWindow(windowId, { isMinimized: true })
-  }, [updateWindow])
+  const minimizeWindow = useCallback(
+    (windowId: string) => {
+      updateWindow(windowId, { isMinimized: true })
+    },
+    [updateWindow]
+  )
 
-  const restoreWindow = useCallback((windowId: string) => {
-    updateWindow(windowId, { isMinimized: false, isMaximized: false })
-    focusWindow(windowId)
-  }, [updateWindow, focusWindow])
+  const restoreWindow = useCallback(
+    (windowId: string) => {
+      updateWindow(windowId, { isMinimized: false, isMaximized: false })
+      focusWindow(windowId)
+    },
+    [updateWindow, focusWindow]
+  )
 
-  const maximizeWindow = useCallback((windowId: string) => {
-    updateWindow(windowId, { isMaximized: true, isMinimized: false })
-  }, [updateWindow])
+  const maximizeWindow = useCallback(
+    (windowId: string) => {
+      updateWindow(windowId, { isMaximized: true, isMinimized: false })
+    },
+    [updateWindow]
+  )
 
   return {
     windows,

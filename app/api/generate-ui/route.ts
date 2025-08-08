@@ -6,7 +6,10 @@ export async function POST(request: NextRequest) {
     // APIキーの確認
     if (!process.env.GEMINI_API_KEY) {
       return NextResponse.json(
-        { error: 'Gemini API key is not configured. Please set GEMINI_API_KEY in .env.local' },
+        {
+          error:
+            'Gemini API key is not configured. Please set GEMINI_API_KEY in .env.local',
+        },
         { status: 500 }
       )
     }
@@ -15,10 +18,7 @@ export async function POST(request: NextRequest) {
     const { appId } = body
 
     if (!appId) {
-      return NextResponse.json(
-        { error: 'appId is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'appId is required' }, { status: 400 })
     }
 
     // Gemini APIを使用してUI構造を生成
@@ -28,8 +28,11 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error generating UI:', error)
     return NextResponse.json(
-      { 
-        error: error instanceof Error ? error.message : 'Failed to generate UI with Gemini API' 
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to generate UI with Gemini API',
       },
       { status: 500 }
     )

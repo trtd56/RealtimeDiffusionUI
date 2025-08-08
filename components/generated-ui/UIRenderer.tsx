@@ -13,13 +13,18 @@ interface UIRendererProps {
   onAction?: (action: string, data?: any) => void
 }
 
-export const UIRenderer: React.FC<UIRendererProps> = ({ uiStructure, onAction }) => {
+export const UIRenderer: React.FC<UIRendererProps> = ({
+  uiStructure,
+  onAction,
+}) => {
   const [inputValues, setInputValues] = useState<Record<string, string>>({})
-  const [selectedValues, setSelectedValues] = useState<Record<string, string>>({})
+  const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
+    {}
+  )
 
   const handleInputChange = useCallback((id: string, value: string) => {
-    setInputValues(prev => ({ ...prev, [id]: value }))
-    
+    setInputValues((prev) => ({ ...prev, [id]: value }))
+
     // 文字数カウント更新
     if (id === 'content') {
       const charCountElement = document.getElementById('charCount')
@@ -30,73 +35,80 @@ export const UIRenderer: React.FC<UIRendererProps> = ({ uiStructure, onAction })
   }, [])
 
   const handleSelectChange = useCallback((id: string, value: string) => {
-    setSelectedValues(prev => ({ ...prev, [id]: value }))
+    setSelectedValues((prev) => ({ ...prev, [id]: value }))
   }, [])
 
-  const handleClick = useCallback((action: string) => {
-    if (action === 'clear') {
-      // すべての入力をクリア
-      setInputValues({})
-      setSelectedValues({})
-      // textareaとinputをクリア
-      const inputs = document.querySelectorAll('input, textarea, select')
-      inputs.forEach((input: any) => {
-        if (input.type === 'text' || input.tagName === 'TEXTAREA') {
-          input.value = ''
-        } else if (input.tagName === 'SELECT') {
-          input.selectedIndex = 0
+  const handleClick = useCallback(
+    (action: string) => {
+      if (action === 'clear') {
+        // すべての入力をクリア
+        setInputValues({})
+        setSelectedValues({})
+        // textareaとinputをクリア
+        const inputs = document.querySelectorAll('input, textarea, select')
+        inputs.forEach((input: any) => {
+          if (input.type === 'text' || input.tagName === 'TEXTAREA') {
+            input.value = ''
+          } else if (input.tagName === 'SELECT') {
+            input.selectedIndex = 0
+          }
+        })
+        // 文字数カウントもリセット
+        const charCountElement = document.getElementById('charCount')
+        if (charCountElement) {
+          charCountElement.textContent = '文字数: 0'
         }
-      })
-      // 文字数カウントもリセット
-      const charCountElement = document.getElementById('charCount')
-      if (charCountElement) {
-        charCountElement.textContent = '文字数: 0'
-      }
-    } else if (action === 'save') {
-      // 保存処理
-      const data = {
-        ...inputValues,
-        ...selectedValues,
-        timestamp: new Date().toISOString()
-      }
-      console.log('保存データ:', data)
-      alert('メモを保存しました！')
-      onAction?.(action, data)
-    } else if (action === 'calculate') {
-      // 計算処理
-      const display = document.getElementById('display') as HTMLInputElement
-      if (display && display.value) {
-        try {
-          // 安全な計算のために Function constructor を使用
-          const result = Function('"use strict"; return (' + display.value + ')')()
-          display.value = String(result)
-        } catch (e) {
-          display.value = 'Error'
+      } else if (action === 'save') {
+        // 保存処理
+        const data = {
+          ...inputValues,
+          ...selectedValues,
+          timestamp: new Date().toISOString(),
         }
-      }
-    } else if (action.startsWith('append:')) {
-      // 電卓の数字入力
-      const value = action.replace('append:', '')
-      const display = document.getElementById('display') as HTMLInputElement
-      if (display) {
-        if (value === 'C') {
-          display.value = ''
-        } else if (value === '=') {
+        console.log('保存データ:', data)
+        alert('メモを保存しました！')
+        onAction?.(action, data)
+      } else if (action === 'calculate') {
+        // 計算処理
+        const display = document.getElementById('display') as HTMLInputElement
+        if (display && display.value) {
           try {
-            const result = Function('"use strict"; return (' + display.value + ')')()
+            // 安全な計算のために Function constructor を使用
+            const result = Function(
+              '"use strict"; return (' + display.value + ')'
+            )()
             display.value = String(result)
           } catch (e) {
             display.value = 'Error'
           }
-        } else {
-          display.value += value
         }
+      } else if (action.startsWith('append:')) {
+        // 電卓の数字入力
+        const value = action.replace('append:', '')
+        const display = document.getElementById('display') as HTMLInputElement
+        if (display) {
+          if (value === 'C') {
+            display.value = ''
+          } else if (value === '=') {
+            try {
+              const result = Function(
+                '"use strict"; return (' + display.value + ')'
+              )()
+              display.value = String(result)
+            } catch (e) {
+              display.value = 'Error'
+            }
+          } else {
+            display.value += value
+          }
+        }
+      } else {
+        // その他のアクション
+        onAction?.(action, { inputValues, selectedValues })
       }
-    } else {
-      // その他のアクション
-      onAction?.(action, { inputValues, selectedValues })
-    }
-  }, [inputValues, selectedValues, onAction])
+    },
+    [inputValues, selectedValues, onAction]
+  )
 
   const renderNode = (node: UINode | string, key?: number): React.ReactNode => {
     // テキストノード
@@ -150,7 +162,8 @@ export const UIRenderer: React.FC<UIRendererProps> = ({ uiStructure, onAction })
           value={selectedValues[id] || ''}
           onChange={(e) => handleSelectChange(id, e.target.value)}
         >
-          {Array.isArray(children) && children.map((child, idx) => renderNode(child, idx))}
+          {Array.isArray(children) &&
+            children.map((child, idx) => renderNode(child, idx))}
         </select>
       )
     }
