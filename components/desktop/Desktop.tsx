@@ -7,46 +7,8 @@ import { CreateAppModal } from './CreateAppModal'
 import { useWindowContext } from '@/contexts/WindowContext'
 import { useCustomApps } from '@/hooks/useCustomApps'
 import { AppConfig } from '@/types'
-import { Calculator, FileText, Palette, Code, Table, Mail } from 'lucide-react'
 
-const defaultApps: AppConfig[] = [
-  {
-    id: 'notepad',
-    name: 'メモ帳',
-    icon: <FileText size={32} />,
-    defaultSize: { width: 600, height: 400 },
-  },
-  {
-    id: 'calculator',
-    name: '電卓',
-    icon: <Calculator size={32} />,
-    defaultSize: { width: 320, height: 480 },
-  },
-  {
-    id: 'paint',
-    name: 'ペイント',
-    icon: <Palette size={32} />,
-    defaultSize: { width: 800, height: 600 },
-  },
-  {
-    id: 'code',
-    name: 'コードエディタ',
-    icon: <Code size={32} />,
-    defaultSize: { width: 900, height: 600 },
-  },
-  {
-    id: 'table',
-    name: 'テーブル',
-    icon: <Table size={32} />,
-    defaultSize: { width: 700, height: 500 },
-  },
-  {
-    id: 'mail',
-    name: 'メール',
-    icon: <Mail size={32} />,
-    defaultSize: { width: 800, height: 600 },
-  },
-]
+const defaultApps: AppConfig[] = []
 
 export const Desktop: React.FC = () => {
   const { addWindow } = useWindowContext()
