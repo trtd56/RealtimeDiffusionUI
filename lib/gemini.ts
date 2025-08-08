@@ -13,7 +13,7 @@ const appTypePrompts: Record<string, string> = {
 export async function generateUIWithGemini(
   appId: string,
   customPrompt?: string
-): Promise<any> {
+): Promise<string> {
   const apiKey = process.env.GEMINI_API_KEY
 
   if (!apiKey) {
@@ -35,16 +35,15 @@ export async function generateUIWithGemini(
     },
     systemInstruction: [
       {
-        text: `あなたは優秀なUIデザイナーです。要求されたアプリケーションのUIをJSON形式で設計してください。
-以下の条件を満たしてください：
-- JSON形式でUIの構造を返す
-- 各要素は type, props, children を持つ
-- propsにはTailwind CSSクラス名を含める（className）
-- 日本語のラベルやプレースホルダーを使用
-- モダンで使いやすいUIデザイン
-- レスポンシブデザインを考慮
-- 適切なインタラクティブ要素（ボタン、入力フィールドなど）を含める
-- onClickなどのイベントハンドラーには文字列でアクション名を指定（例: "save", "clear", "calculate"）`,
+        text: `あなたは優秀なUIデザイナーです。要求されたアプリケーションのUIを、単一のHTMLファイルとして生成してください。
+以下の条件を厳守してください：
+- 全体を\`<html>\`から\`</html>\`まで含む、完全なHTML文字列を生成する
+- \`<head>\`内でTailwind CSSをCDNから読み込む（<script src="https://cdn.tailwindcss.com"></script>）
+- UIは日本語を基本とし、モダンでレスポンシブなデザインにする
+- インタラクティブな要素（ボタンなど）がクリックされた場合、JavaScriptの \`window.parent.postMessage\` を使用して、親ウィンドウにアクションを通知する
+- postMessageで送信するデータは \`{ type: 'action', payload: { action: 'アクション名', ... } }\` の形式のJSONオブジェクトとする
+- 生成するコードは、\`\`\`html ... \`\`\` のようなマークダウンのコードブロックで囲むこと
+- HTML以外のテキスト（説明など）は一切含めないこと`,
       },
     ],
   }
@@ -64,166 +63,87 @@ export async function generateUIWithGemini(
       role: 'model',
       parts: [
         {
-          text: JSON.stringify({
-            type: 'div',
-            props: { className: 'p-6 max-w-3xl mx-auto' },
-            children: [
-              {
-                type: 'div',
-                props: {
-                  className: 'bg-white rounded-lg shadow-lg overflow-hidden',
-                },
-                children: [
-                  {
-                    type: 'div',
-                    props: {
-                      className:
-                        'bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4',
-                    },
-                    children: [
-                      {
-                        type: 'h2',
-                        props: { className: 'text-2xl font-bold text-white' },
-                        children: 'メモ帳',
-                      },
-                    ],
-                  },
-                  {
-                    type: 'div',
-                    props: { className: 'p-6 space-y-4' },
-                    children: [
-                      {
-                        type: 'div',
-                        props: {},
-                        children: [
-                          {
-                            type: 'label',
-                            props: {
-                              className:
-                                'block text-sm font-medium text-gray-700 mb-2',
-                            },
-                            children: 'タイトル',
-                          },
-                          {
-                            type: 'input',
-                            props: {
-                              type: 'text',
-                              className:
-                                'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-                              placeholder: 'メモのタイトルを入力',
-                              id: 'title',
-                            },
-                          },
-                        ],
-                      },
-                      {
-                        type: 'div',
-                        props: {},
-                        children: [
-                          {
-                            type: 'label',
-                            props: {
-                              className:
-                                'block text-sm font-medium text-gray-700 mb-2',
-                            },
-                            children: 'カテゴリー',
-                          },
-                          {
-                            type: 'select',
-                            props: {
-                              className:
-                                'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500',
-                              id: 'category',
-                            },
-                            children: [
-                              { type: 'option', props: {}, children: '仕事' },
-                              {
-                                type: 'option',
-                                props: {},
-                                children: 'プライベート',
-                              },
-                              {
-                                type: 'option',
-                                props: {},
-                                children: 'アイデア',
-                              },
-                              { type: 'option', props: {}, children: 'その他' },
-                            ],
-                          },
-                        ],
-                      },
-                      {
-                        type: 'div',
-                        props: {},
-                        children: [
-                          {
-                            type: 'label',
-                            props: {
-                              className:
-                                'block text-sm font-medium text-gray-700 mb-2',
-                            },
-                            children: '内容',
-                          },
-                          {
-                            type: 'textarea',
-                            props: {
-                              className:
-                                'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-64 resize-none',
-                              placeholder: 'メモの内容を入力...',
-                              id: 'content',
-                            },
-                          },
-                        ],
-                      },
-                      {
-                        type: 'div',
-                        props: {
-                          className: 'flex justify-between items-center',
-                        },
-                        children: [
-                          {
-                            type: 'div',
-                            props: { className: 'text-sm text-gray-500' },
-                            children: [
-                              {
-                                type: 'span',
-                                props: { id: 'charCount' },
-                                children: '文字数: 0',
-                              },
-                            ],
-                          },
-                          {
-                            type: 'div',
-                            props: { className: 'flex gap-3' },
-                            children: [
-                              {
-                                type: 'button',
-                                props: {
-                                  className:
-                                    'px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors',
-                                  onClick: 'clear',
-                                },
-                                children: 'クリア',
-                              },
-                              {
-                                type: 'button',
-                                props: {
-                                  className:
-                                    'px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors',
-                                  onClick: 'save',
-                                },
-                                children: '保存',
-                              },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          }),
+          text: `\`\`\`html
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>メモ帳</title>
+</head>
+<body class="bg-gray-100">
+  <div class="p-6 max-w-3xl mx-auto">
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+      <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+        <h2 class="text-2xl font-bold text-white">メモ帳</h2>
+      </div>
+      <div class="p-6 space-y-4">
+        <div>
+          <label for="title" class="block text-sm font-medium text-gray-700 mb-2">タイトル</label>
+          <input type="text" id="title" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="メモのタイトルを入力">
+        </div>
+        <div>
+          <label for="category" class="block text-sm font-medium text-gray-700 mb-2">カテゴリー</label>
+          <select id="category" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option>仕事</option>
+            <option>プライベート</option>
+            <option>アイデア</option>
+            <option>その他</option>
+          </select>
+        </div>
+        <div>
+          <label for="content" class="block text-sm font-medium text-gray-700 mb-2">内容</label>
+          <textarea id="content" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-64 resize-none" placeholder="メモの内容を入力..."></textarea>
+        </div>
+        <div class="flex justify-between items-center">
+          <div class="text-sm text-gray-500">
+            <span id="charCount">文字数: 0</span>
+          </div>
+          <div class="flex gap-3">
+            <button id="clear-btn" class="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors">クリア</button>
+            <button id="save-btn" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const content = document.getElementById('content');
+    const charCount = document.getElementById('charCount');
+    content.addEventListener('input', () => {
+      charCount.textContent = '文字数: ' + content.value.length;
+    });
+
+    document.getElementById('save-btn').addEventListener('click', () => {
+      const title = document.getElementById('title').value;
+      const category = document.getElementById('category').value;
+      const text = document.getElementById('content').value;
+      window.parent.postMessage({
+        type: 'action',
+        payload: {
+          action: 'save',
+          title,
+          category,
+          text,
+          charCount: text.length
+        }
+      }, '*');
+    });
+
+    document.getElementById('clear-btn').addEventListener('click', () => {
+      document.getElementById('title').value = '';
+      document.getElementById('content').value = '';
+      charCount.textContent = '文字数: 0';
+      window.parent.postMessage({
+        type: 'action',
+        payload: { action: 'clear' }
+      }, '*');
+    });
+  </script>
+</body>
+</html>
+\`\`\``,
         },
       ],
     },
@@ -246,27 +166,21 @@ export async function generateUIWithGemini(
 
     const text = response.text || ''
 
-    // コードブロックから JSONを抽出
-    const jsonMatch =
-      text.match(/```json\n?([\s\S]*?)\n?```/) ||
-      text.match(/```\n?([\s\S]*?)\n?```/)
-
-    if (jsonMatch) {
-      try {
-        return JSON.parse(jsonMatch[1].trim())
-      } catch (e) {
-        console.error('Failed to parse JSON from Gemini:', e)
-        // JSONパースに失敗した場合は文字列をそのまま試みる
-      }
+    // HTMLコードブロックからHTMLを抽出
+    const htmlMatch = text.match(/```html\n?([\s\S]*?)\n?```/)
+    if (htmlMatch) {
+      return htmlMatch[1].trim()
     }
 
-    // コードブロックがない場合はそのままJSONとしてパースを試みる
-    try {
-      return JSON.parse(text.trim())
-    } catch (e) {
-      console.error('Failed to parse response as JSON:', e)
-      throw new Error('Gemini returned invalid JSON format')
+    // コードブロックがない場合は、<!DOCTYPE html>または<html>タグで始まっているか確認
+    if (
+      text.trim().startsWith('<!DOCTYPE html>') ||
+      text.trim().startsWith('<html>')
+    ) {
+      return text.trim()
     }
+
+    throw new Error('Gemini did not return valid HTML format.')
   } catch (error) {
     console.error('Gemini API Error:', error)
     if (error instanceof Error) {

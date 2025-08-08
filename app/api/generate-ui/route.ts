@@ -21,10 +21,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'appId is required' }, { status: 400 })
     }
 
-    // Gemini APIを使用してUI構造を生成
-    const uiStructure = await generateUIWithGemini(appId, customPrompt)
+    // Gemini APIを使用してUIのHTMLを生成
+    const uiHtml = await generateUIWithGemini(appId, customPrompt)
 
-    return NextResponse.json({ uiStructure })
+    return NextResponse.json({ uiHtml })
   } catch (error) {
     console.error('Error generating UI:', error)
     return NextResponse.json(

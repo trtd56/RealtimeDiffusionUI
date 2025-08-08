@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { UIRenderer } from './UIRenderer'
 
@@ -13,14 +13,14 @@ export const GeneratedUI: React.FC<GeneratedUIProps> = ({
   appId,
   customPrompt,
 }) => {
-  const [uiStructure, setUiStructure] = useState<any>(null)
+  const [uiHtml, setUiHtml] = useState<string>('')
   const [isGenerating, setIsGenerating] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const generateUI = async () => {
       setIsGenerating(true)
-      setUiStructure(null)
+      setUiHtml('')
       setError(null)
 
       try {
@@ -46,8 +46,8 @@ export const GeneratedUI: React.FC<GeneratedUIProps> = ({
           throw new Error(data.error)
         }
 
-        // UI構造を設定
-        setUiStructure(data.uiStructure)
+        // HTML文字列を設定
+        setUiHtml(data.uiHtml)
       } catch (err) {
         console.error('Error generating UI:', err)
         setError(err instanceof Error ? err.message : 'UI生成に失敗しました')
@@ -58,6 +58,27 @@ export const GeneratedUI: React.FC<GeneratedUIProps> = ({
 
     generateUI()
   }, [appId, customPrompt])
+
+  // iframeからのアクションハンドラー
+  const handleAction = useCallback((action: string, payload?: any) => {
+    console.log(`アクション実行: ${action}`, payload)
+
+    // アクションに応じた処理を実装
+    switch (action) {
+      case 'save':
+        console.log('保存データ:', payload)
+        // ここで実際の保存処理を実装（APIコール、ローカルストレージなど）
+        alert(
+          `メモを保存しました！\nタイトル: ${payload.title}\nカテゴリー: ${payload.category}\n文字数: ${payload.charCount}`
+        )
+        break
+      case 'clear':
+        console.log('クリア実行')
+        break
+      default:
+        console.log('未定義のアクション:', action)
+    }
+  }, [])
 
   if (error) {
     return (
@@ -84,23 +105,20 @@ export const GeneratedUI: React.FC<GeneratedUIProps> = ({
     )
   }
 
-  if (isGenerating && !uiStructure) {
+  if (isGenerating && !uiHtml) {
     return (
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         className="flex items-center justify-center h-full"
       >
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4 mx-auto"></div>
+          <p className="text-lg font-semibold">UIを生成中...</p>
+          <p className="text-sm text-gray-500">AIがデザインを考えています</p>
+        </div>
       </motion.div>
     )
-  }
-
-  // アクションハンドラー
-  const handleAction = (action: string, data?: any) => {
-    console.log(`アクション実行: ${action}`, data)
-    // ここで必要に応じて、親コンポーネントへの通知や
-    // グローバルな状態管理などを実装できます
   }
 
   return (
@@ -108,11 +126,9 @@ export const GeneratedUI: React.FC<GeneratedUIProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="h-full overflow-auto relative"
+      className="h-full overflow-hidden relative"
     >
-      {uiStructure && (
-        <UIRenderer uiStructure={uiStructure} onAction={handleAction} />
-      )}
+      {uiHtml && <UIRenderer uiHtml={uiHtml} onAction={handleAction} />}
     </motion.div>
   )
 }
